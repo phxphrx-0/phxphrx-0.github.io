@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="LifeFork：做一個重大的決定，先跟身邊的人練習怎麼開口，再快轉三年看看會怎樣。">
+<title>LifeFork</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="introView" class="wrap">
+  <p class="eyebrow">人生岔路 · 選擇模擬 · v0.24</p>
+  <h1>LifeFork</h1>
+  <p class="lede">做一個重大的決定：可以先跟身邊的人談、先斬後奏，或誰都不說。然後往前快轉三年。世界一天一天往前走，每天都可能發生大事；錢、精力、關係會累積，你說過的話別人會記得。每天都可以拿起手機「查一下」。走到最後，可以回到任何一章重新選擇。</p>
+  <div class="panel">
+    <h2>開始前請先知道</h2>
+    <ul class="plain">
+      <li>所有人都是依照你的描述演出來的，是<b>模擬</b>，不是預測；數字也只是你填的假設。</li>
+      <li>角色由 Google Gemini 演出：你輸入的內容會用<b>你自己的 Gemini API 金鑰</b>直接送到 Google，用的是你的額度，不經過我們的伺服器。</li>
+      <li>任何欄位都可以跳過或填假的。完整版大約 25 到 40 分鐘；只想練開口那一段，用 5 分鐘版就好。任何時候都可以按右下角「先停一下」。</li>
+    </ul>
+    <details id="aiBox" class="aiBox" open>
+      <summary>AI 設定：使用你自己的 Gemini 金鑰</summary>
+      <ol class="plain">
+        <li>到 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> 用你的 Google 帳號登入，按「Create API key」建立金鑰。</li>
+        <li>把金鑰貼在下面，按「儲存並測試」。</li>
+      </ol>
+      <div class="aiRow"><input id="aiKey" type="password" autocomplete="off" spellcheck="false" aria-label="Gemini API 金鑰"><button id="aiSave" type="button">儲存並測試</button><button id="aiClear" type="button" hidden>清除</button></div>
+      <div class="aiRow"><label><input type="checkbox" id="aiRemember" checked> 記住在這台電腦</label>
+        <label>模式 <select id="aiMode"><option value="lite">省額度（建議）</option><option value="full">品質優先</option></select></label></div>
+      <p id="aiInfo" class="status"></p>
+      <p class="note">金鑰只存在你的瀏覽器裡。用公用電腦請取消「記住在這台電腦」，用完按「清除」。若你的 Google 專案是免費方案，Google 可能會用送出的內容改進他們的服務，也可能有人工審閱，請不要輸入真實姓名或敏感資料。</p>
+    </details>
+    <p id="sampleStatus" class="status"></p>
+    <div class="btns"><button id="toSetup" class="primary">開始設定（完整版）</button><button id="toQuick">5 分鐘版：只練開口那一段</button></div>
+  </div>
+</div>
+
+<div id="setupView" class="wrap" hidden>
+  <p class="eyebrow">設定 · 你的岔路口</p>
+  <h2>你面對的是什麼決定？</h2>
+  <p class="note">下面先放了一份<span class="tag">範例</span>，數字也都是範例，請改成你自己的狀況，或按「清空範例」。</p>
+  <form id="setupForm" class="panel">
+    <div class="field"><label for="f_decision">你正在面對的決定</label><input type="text" id="f_decision"></div>
+    <div class="row">
+      <div class="field"><label for="f_optA">選項 A</label><input type="text" id="f_optA"></div>
+      <div class="field"><label for="f_optB">選項 B</label><input type="text" id="f_optB"></div>
+    </div>
+    <div class="field"><label for="f_lean">你目前傾向</label>
+      <select id="f_lean"><option value="A">選項 A</option><option value="B">選項 B</option><option value="?">還不確定</option></select></div>
+    <div class="field fullOnly"><label for="f_mode">這個決定你會怎麼做</label>
+      <select id="f_mode">
+        <option value="discuss">先跟身邊的人談，再決定</option>
+        <option value="after">先斬後奏：自己決定、做了，再告訴他們</option>
+        <option value="alone">自己決定，不打算跟誰說</option>
+      </select><span class="hint">三種都可以試，最後能比較三年後的差別。</span></div>
+    <div class="field"><label for="f_myCare">你自己最在意的是什麼</label><textarea id="f_myCare"></textarea></div>
+    <div class="field fullOnly"><label for="f_facts">其他相關的事實（可跳過）</label><textarea id="f_facts"></textarea></div>
+
+    <p class="note quickOnly">5 分鐘版只需要填上面幾欄和下面「你身邊的人」，而且只練第 0 章那段對話。想看接下來三年，之後可以再補資料。</p>
+    <div class="fullOnly">
+    <h3>關於你</h3>
+    <p class="note">寫得越具體，後面三年的故事和 AI 代說就越像你。都可以跳過。</p>
+    <div class="row">
+      <div class="field"><label for="f_who">你是誰</label><input type="text" id="f_who"><span class="hint">年齡、身分、科系或工作</span></div>
+      <div class="field"><label for="f_live">住在哪、跟誰住</label><input type="text" id="f_live"></div>
+    </div>
+    <div class="field"><label for="f_now">你現在的日常</label><textarea id="f_now"></textarea><span class="hint">在忙什麼、時間都花在哪</span></div>
+    <div class="field"><label for="f_good">你擅長什麼、做過什麼</label><textarea id="f_good"></textarea></div>
+    <div class="field"><label for="f_weak">你擔心自己的地方</label><textarea id="f_weak"></textarea></div>
+    <div class="field"><label for="f_conflict">被質疑或吵架時，你通常怎麼反應</label><input type="text" id="f_conflict"></div>
+    <div class="row">
+      <div class="field"><label for="f_planA">如果選 A，你的具體打算</label><textarea id="f_planA"></textarea></div>
+      <div class="field"><label for="f_planB">如果選 B，你的具體打算</label><textarea id="f_planB"></textarea></div>
+    </div>
+    <div class="field"><label for="f_dread">三年後你最怕變成什麼樣</label><input type="text" id="f_dread"></div>
+
+    <h3>錢（每月，新台幣）</h3>
+    <div class="row">
+      <div class="field"><label for="f_incA">選 A 的月收入</label><input type="number" id="f_incA" inputmode="numeric"></div>
+      <div class="field"><label for="f_expA">選 A 的月支出</label><input type="number" id="f_expA" inputmode="numeric"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="f_incB">選 B 的月收入</label><input type="number" id="f_incB" inputmode="numeric"></div>
+      <div class="field"><label for="f_expB">選 B 的月支出</label><input type="number" id="f_expB" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label for="f_savings">現在的存款</label><input type="number" id="f_savings" inputmode="numeric"></div>
+    </div>
+
+    <h3>你身邊的人</h3>
+    <p class="note">最多 6 位。勾「第 0 章出現」的人（1 到 3 位）是你一開始會去談、或事後要告知的對象；其他人會在之後的三年陸續出現。選「不打算跟誰說」時這個勾選不影響。</p>
+    <div id="people" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div class="btns"><button type="button" id="addPerson">＋ 再加一個人</button></div>
+    <div class="field" id="groupField" hidden><label for="f_group">群組名稱</label><input type="text" id="f_group"></div>
+
+    <p id="setupStatus" class="status"></p>
+    <div class="btns">
+      <button type="submit" id="genCard" class="primary">產生角色卡</button>
+      <button type="button" id="clearExample">清空範例</button>
+      <button type="button" id="backIntro">返回</button>
+    </div>
+  </form>
+</div>
+
+<div id="cardView" class="wrap" hidden>
+  <p class="eyebrow">設定 · 確認對方像不像</p>
+  <h2>角色卡</h2>
+  <p class="note">這是依你的描述整理出來的。不像的地方直接改。這些人會一路出現在接下來的三年裡。</p>
+  <div id="cards" style="display:flex;flex-direction:column;gap:16px"></div>
+  <div class="panel">
+    <div class="field"><label for="c_medium">第 0 章怎麼說</label><select id="c_medium"><option value="face">面對面（在家吃飯或約出來）</option><option value="msg">傳訊息</option></select></div>
+    <label class="check"><input type="checkbox" id="c_first"> 讓對方先開口</label>
+    <div class="btns">
+      <button id="startChat" class="primary">開始：第 0 章 · 攤牌</button>
+      <button id="toHope" class="fullOnly">先看看你想要的樣子</button>
+      <button id="backSetup">回上一步</button>
+    </div>
+  </div>
+</div>
+
+<div id="hopeView" class="wrap" hidden>
+  <p class="eyebrow">還沒決定之前 · 可以跳過</p>
+  <h2>先看看你想要的樣子</h2>
+  <p class="note">寫下 1 到 3 個你希望三年內會出現的畫面，越具體越好：什麼時候、在哪裡、誰在、在做什麼。每個畫面演完，會請你想一件事：在你自己身上，最可能讓它不會發生的是什麼。研究發現只想像美好的畫面，反而會讓人比較不想行動；把畫面和阻礙放在一起想，才比較會變成計畫。三年模擬跑完後，會用同一個畫面演出那條路實際的樣子。</p>
+  <div id="hopes" style="display:flex;flex-direction:column;gap:16px"></div>
+  <div class="btns"><button id="addHope" class="small" type="button">再加一個畫面</button></div>
+  <div class="btns"><button id="hopeDone" class="primary" type="button">好了，回到角色卡</button></div>
+  <p class="note">這些畫面只存在這個頁面。「複製紀錄給團隊」只會帶畫面的標題和三年後的對照結果，不會帶你寫的阻礙與計畫。</p>
+</div>
+
+<div id="chatView" hidden>
+  <div class="phone">
+    <div class="chathead">
+      <div class="avatar" id="avatar">媽</div>
+      <div class="who"><b id="chatName">媽</b><small id="chatSub">訊息</small></div>
+      <button type="button" class="small" id="logBtn" hidden aria-pressed="false">看紀錄</button>
+      <div class="clock" id="clock" aria-label="剩餘時間"></div>
+    </div>
+    <div class="stage" id="stage" hidden><figure class="scene" id="stageScene"></figure><div id="bubbles"></div><div id="hotTip" class="hottip" hidden></div><div id="hotMenu" class="hotmenu" hidden></div><div class="viewhint" id="talkHint">拖曳轉視角・滾輪縮放・點兩下回原位</div></div>
+    <div class="dbox" id="dbox" hidden aria-live="polite"><b id="dName"></b><p class="act" id="dAct"></p><p class="line" id="dText"></p></div>
+    <div class="actrow" id="actRow" hidden></div>
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+    <div class="wheel" id="wheel" hidden><div class="wheel-q" id="wheelQ"></div><div class="wheel-opts" id="wheelOpts"></div><div class="wheel-bar"><i id="wheelBar"></i></div></div>
+    <div class="tools">
+      <div class="grp">
+        <label for="aiStyle">測試用 · AI 代說</label>
+        <select id="aiStyle">
+          <option value="natural">照我的設定</option>
+          <option value="honest">坦白說理</option>
+          <option value="avoid">迴避拖延</option>
+          <option value="defy">強硬頂嘴</option>
+          <option value="yield">讓步妥協</option>
+        </select>
+        <button class="small" id="aiSay" type="button">AI 幫我說一句</button>
+        <label class="check"><input type="checkbox" id="aiEdit"> 先讓我改</label>
+      </div>
+      <div class="grp">
+        <button class="small sndBtn" type="button">🔊 環境音</button>
+        
+        <select id="viewSel" class="gfxSel" aria-label="視角"><option value="shoulder">視角：肩後</option><option value="first">視角：第一人稱</option><option value="wide">視角：旁觀</option></select>
+        <label class="check"><input type="checkbox" id="wheelOn" checked> 限時選項</label>
+        <button class="small" id="toolsBtn" type="button" aria-expanded="false">更多選項</button>
+        <button class="small" id="endChat" type="button">結束對話</button>
+      </div>
+    </div>
+    <form class="compose" id="compose">
+      <label for="msgInput" hidden>訊息</label>
+      <textarea id="msgInput" rows="1" placeholder="輸入訊息⋯"></textarea>
+      <button type="submit" class="primary" id="sendBtn">傳送</button>
+    </form>
+  </div>
+</div>
+
+<div id="pathView" class="wrap" hidden>
+  <p class="eyebrow" id="pathEyebrow">第 0 章 · 結束</p>
+  <h2 id="pathTitle">說完了。你最後選哪一條？</h2>
+  <div id="ch0Result" class="panel"></div>
+  <div id="ch0Feedback" class="panel fb" hidden></div>
+  <div id="emoPath" class="panel emo" hidden></div>
+  <div class="panel">
+    <p class="note" id="pathNote">剛才的對話會影響接下來你跟他們的關係。現在做出你真正的選擇，故事從下個月開始。</p>
+    <div class="btns" id="pathBtns"></div>
+  </div>
+</div>
+
+<div id="dayView" hidden>
+  <div class="daywrap">
+    <div class="daymain">
+      <p class="eyebrow" id="dEyebrow"></p>
+      <p class="date" id="dDate"></p>
+      <div class="scenewrap"><figure class="scene" id="scene"></figure><div id="dayTip" class="hottip" hidden></div><div class="viewhint" id="dayHint">左右拖曳轉視角・點兩下回原位</div></div>
+      <p class="scenecap" id="sceneCap"></p>
+      <div class="actrow" id="dayActs" aria-label="今天想做的事"></div>
+      <div class="panel qpanel" id="qPanel" hidden aria-label="手機：查一下">
+        <div class="qhead"><h3>📱 查一下</h3><button class="small" type="button" id="qClose">放下手機</button></div>
+        <p class="note">想確認什麼就問：家人的身體、錢還能撐多久、某個人最近在做什麼。答案照這個世界現在的狀態回，而且會被記下來。有些事不去問，就不會知道。</p>
+        <div class="chips" id="qChips"></div>
+        <form id="qForm" style="display:flex;gap:8px"><label for="qInput" hidden>想查的事</label><input type="text" id="qInput" placeholder="例如：媽最近身體還好嗎？"><button class="small" type="submit" id="qBtn">查</button></form>
+        <p id="qStatus" class="status"></p>
+        <div id="qAnswers" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+      <div class="panel" id="statPanel"></div>
+      <div class="controls">
+        <button id="dNext" class="primary">下一天</button>
+        <button id="dPlay">▶ 自動播放</button>
+        <label for="dSpeed" class="note">速度</label>
+        <select id="dSpeed"><option value="1">一秒一天</option><option value="4" selected>一秒四天</option><option value="15">一秒半個月</option></select>
+        <button id="dJump">跳到下一件大事</button>
+        <button class="small sndBtn" type="button">🔊 環境音</button>
+        
+      </div>
+      <p id="dStatus" class="status" aria-live="polite"></p>
+      <div class="panel evpanel" id="evPanel" hidden>
+        <p class="eyebrow" id="evEyebrow">大事</p>
+        <h3 id="evTitle"></h3>
+        <figure class="scene" id="evScene"></figure>
+        <p class="scenecap" id="evCap"></p>
+        <p class="story" id="evStory"></p>
+        <div class="notifs" id="evNotifs"></div>
+        <p id="evMoment"></p>
+        <div class="btns"><button id="enterScene" class="primary">打開對話</button><button id="skipScene">直接做決定</button></div>
+      </div>
+      <div class="panel"><h3>每一天</h3><div class="feed" id="feed"></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="choiceView" class="wrap" hidden>
+  <p class="eyebrow" id="choEyebrow"></p>
+  <h2 id="choTitle">你要怎麼做？</h2>
+  <div id="choices" style="display:flex;flex-direction:column;gap:10px"></div>
+  <div id="outcomeBox" class="panel" hidden>
+    <p class="outcome" id="outcomeText"></p>
+    <div class="deltas" id="deltas"></div>
+    <div class="btns"><button id="nextChapter" class="primary">繼續</button></div>
+  </div>
+</div>
+
+<div id="finalView" class="wrap" hidden>
+  <p class="eyebrow">三年後</p>
+  <h2 id="finalTitle">三年後的你</h2>
+  <p id="finalStatus" class="status">正在整理這三年⋯（約 20 到 60 秒）</p>
+  <div id="finalBody" hidden style="display:flex;flex-direction:column;gap:16px">
+    <p class="story" id="finalStory"></p>
+    <div class="panel"><h3>兩條路各自得到與付出的</h3>
+      <div class="pair"><div><h4 id="takenName"></h4><p class="note">實際演出的三年</p><b class="gl">得到</b><ul class="plain" id="takenGain"></ul><b class="gl">付出</b><ul class="plain" id="takenCost"></ul></div>
+      <div><h4 id="otherName"></h4><p class="note">沒有演出，只是照你的資料推想</p><p id="otherSketch"></p><b class="gl">可能得到</b><ul class="plain" id="otherGain"></ul><b class="gl">可能付出</b><ul class="plain" id="otherCost"></ul></div></div>
+      <p class="note">兩邊刻意寫得一樣多。想看另一條完整演出，可以在下面回到第 0 章換一條。</p></div>
+    <div class="panel"><h3>存款的變化</h3><div id="moneyChart"></div><div class="rels" id="finalRels"></div></div>
+    <div class="panel"><h3>這三年你做過的選擇</h3><div class="timeline" id="timeline"></div></div>
+    <div class="panel"><h3>最關鍵的轉折</h3><div id="turning" style="display:flex;flex-direction:column;gap:12px"></div></div>
+    <div class="panel" id="hopeFinal"><h3>開始前你想要的，和三年後的你</h3>
+      <div class="pair"><div><h4>開始前你說</h4><p id="saidCare"></p><p class="note" id="saidDread"></p></div><div><h4>你實際一路選的</h4><p id="actualStance"></p></div></div>
+      <p id="gapNote"></p>
+      <p class="status" id="hopeFinalStatus"></p><div id="hopeFinalList" style="display:flex;flex-direction:column;gap:12px"></div></div>
+    <div class="panel"><h3>現實中該先確認的三件事</h3><ol id="questions" class="plain"></ol></div>
+    <div class="panel" id="compareBox" hidden><h3>跟另一條線比</h3><p id="compareText"></p></div>
+    <p class="note">以上是依你的描述與假設演出的模擬，不是預測。</p>
+  </div>
+  <div id="emoFinal" class="panel emo" hidden></div>
+  <div class="panel">
+    <h3>回到某個時刻，換個選擇</h3>
+    <div class="btns" id="rewindBtns"></div>
+    <details><summary>第 0 章對話紀錄</summary><div id="transcript" class="transcript"></div></details>
+    <div class="btns"><button id="copyLog">複製紀錄給團隊</button><button id="restart">重新開始</button></div>
+    <p id="copyStatus" class="status"></p>
+  </div>
+</div>
+
+<button id="pauseBtn" type="button" class="small" hidden>先停一下</button>
+<div id="pauseLayer" hidden role="dialog" aria-modal="true" aria-labelledby="pauseTitle"><div class="panel">
+  <h3 id="pauseTitle">先停在這裡</h3>
+  <p>計時和自動播放都停了。進度還在，但關掉頁面就會消失。</p>
+  <p class="note">如果剛才的內容讓你不舒服，可以直接離開，不用把它演完。這只是一次練習，不代表現實會這樣發生。想找人聊，可以打安心專線 1925（24 小時）。</p>
+  <div class="btns"><button id="pauseGo" class="primary" type="button">繼續</button><button id="pauseQuit" type="button">不玩了，回到開頭</button></div>
+</div></div>
+
+<div id="helpView" class="wrap" hidden>
+  <h2>先停在這裡</h2>
+  <p>你剛才寫的內容聽起來很不好受。這個模擬先暫停。如果你現在很難熬，可以打給：</p>
+  <ul class="plain">
+    <li>安心專線 <b>1925</b>（24 小時）</li>
+    <li>生命線 <b>1995</b></li>
+    <li>張老師 <b>1980</b></li>
+  </ul>
+  <p class="note">也可以找一個你信任的人聊聊。準備好之後，可以重新開始。</p>
+  <div class="btns"><button id="helpBack">回到開頭</button></div>
+</div>
+<script src="js/ai-gemini.js"></script>
+<script src="js/app.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module" src="js/stage3d.js"></script>
+
+</body>
+</html>
